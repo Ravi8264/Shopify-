@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopify Product Page Demo</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+        }
+        
+        .demo-header {
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+        }
+        
+        .product-layout {
+            display: grid;
+            grid-template-columns: 40% 60%;
+            gap: 3rem;
+            align-items: start;
+        }
+        
+        /* Product Gallery */
+        .product-gallery {
+            position: relative;
+        }
+        
+        .main-image-container {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        
+        .main-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .gallery-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+        }
+        
+        .gallery-nav.prev { left: 10px; }
+        .gallery-nav.next { right: 10px; }
+        
+        .thumbnail-gallery {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+        
+        .thumbnail {
+            width: 100%;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            opacity: 0.7;
+        }
+        
+        .thumbnail.active {
+            border-color: #333;
+            opacity: 1;
+        }
+        
+        /* Product Details */
+        .product-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+            color: #333;
+        }
+        
+        .product-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        
+        /* Subscription Options */
+        .subscription-options {
+            margin-bottom: 2rem;
+        }
+        
+        .subscription-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+        
+        .subscription-option.selected {
+            border-color: #333;
+            background: #f8f9fa;
+        }
+        
+        .subscription-info {
+            flex: 1;
+        }
+        
+        .subscription-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .subscription-price {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .current-price {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+        }
+        
+        /* Flavor Selection */
+        .flavor-selection {
+            margin-bottom: 2rem;
+        }
+        
+        .flavor-options {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .flavor-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+        
+        .flavor-swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+        
+        /* Add to Cart */
+        .add-to-cart-section {
+            margin-top: 2rem;
+        }
+        
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #e9ecef;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        #quantity {
+            width: 60px;
+            height: 40px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .add-to-cart-btn {
+            width: 100%;
+            background: #333;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .add-to-cart-btn:hover {
+            background: #555;
+        }
+        
+        .add-to-cart-btn.added {
+            background: #28a745;
+        }
+        
+        /* Cart Notification */
+        .cart-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            font-weight: 600;
+            max-width: 300px;
+        }
+        
+        .cart-notification.show {
+            transform: translateX(0);
+        }
+        
+        .cart-summary {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .cart-summary h4 {
+            margin: 0 0 0.5rem 0;
+            color: #333;
+        }
+        
+        .cart-summary p {
+            margin: 0.25rem 0;
+            color: #666;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .product-layout {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .thumbnail-gallery {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .cart-notification {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-header">
+        <h1>Shopify Product Page Demo</h1>
+    </div>
+
+    <div class="demo-container">
+        <div class="product-layout">
+            <!-- Product Gallery -->
+            <div class="product-gallery">
+                <div class="main-image-container">
+                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop&crop=center" alt="Product" class="main-image">
+                    <button class="gallery-nav prev">‹</button>
+                    <button class="gallery-nav next">›</button>
+                </div>
+                
+                <div class="thumbnail-gallery">
+                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=60&h=60&fit=crop&crop=center" alt="Thumbnail 1" class="thumbnail active">
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=60&h=60&fit=crop&crop=center" alt="Thumbnail 2" class="thumbnail">
+                    <img src="https://images.unsplash.com/photo-1546173159-315724a31696?w=60&h=60&fit=crop&crop=center" alt="Thumbnail 3" class="thumbnail">
+                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=60&h=60&fit=crop&crop=center" alt="Thumbnail 4" class="thumbnail">
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=60&h=60&fit=crop&crop=center" alt="Thumbnail 5" class="thumbnail">
+                </div>
+            </div>
+
+            <!-- Product Details -->
+            <div class="product-details">
+                <h1 class="product-title">Lorem Ipsum Drink</h1>
+                
+                <p class="product-description">
+                    Premium subscription drinks with amazing flavors and benefits.
+                </p>
+                
+                <!-- Subscription Options -->
+                <div class="subscription-options">
+                    <div class="subscription-option selected">
+                        <input type="radio" name="subscription" value="single" checked>
+                        <div class="subscription-info">
+                            <div class="subscription-title">Single Drink Subscription</div>
+                            <div class="subscription-price">
+                                <span class="current-price">$6.00</span>
+                                <span class="original-price">$10</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="subscription-option">
+                        <input type="radio" name="subscription" value="double">
+                        <div class="subscription-info">
+                            <div class="subscription-title">Double Drink Subscription</div>
+                            <div class="subscription-price">
+                                <span class="current-price">$12.00</span>
+                                <span class="original-price">$20</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Flavor Selection -->
+                <div class="flavor-selection">
+                    <h3>Choose Flavor</h3>
+                    <div class="flavor-options">
+                        <div class="flavor-option">
+                            <input type="radio" name="flavor" value="chocolate" checked>
+                            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=40&h=40&fit=crop&crop=center" alt="Chocolate" class="flavor-swatch">
+                            <span>Chocolate</span>
+                        </div>
+                        <div class="flavor-option">
+                            <input type="radio" name="flavor" value="vanilla">
+                            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=40&h=40&fit=crop&crop=center" alt="Vanilla" class="flavor-swatch">
+                            <span>Vanilla</span>
+                        </div>
+                        <div class="flavor-option">
+                            <input type="radio" name="flavor" value="orange">
+                            <img src="https://images.unsplash.com/photo-1546173159-315724a31696?w=40&h=40&fit=crop&crop=center" alt="Orange" class="flavor-swatch">
+                            <span>Orange</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Add to Cart -->
+                <div class="add-to-cart-section">
+                    <div class="quantity-controls">
+                        <button class="quantity-btn minus">-</button>
+                        <input type="number" id="quantity" value="1" min="1" max="10">
+                        <button class="quantity-btn plus">+</button>
+                    </div>
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                    
+                    <!-- Cart Summary -->
+                    <div class="cart-summary" id="cart-summary" style="display: none;">
+                        <h4>Cart Summary</h4>
+                        <div id="cart-items"></div>
+                        <p><strong>Total Items: </strong><span id="total-items">0</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Notification -->
+    <div class="cart-notification" id="cart-notification"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cart state
+            let cartItems = [];
+            let cartCount = 0;
+            
+            // Gallery functionality
+            const thumbnails = document.querySelectorAll('.thumbnail');
+            const mainImage = document.querySelector('.main-image');
+            const prevBtn = document.querySelector('.gallery-nav.prev');
+            const nextBtn = document.querySelector('.gallery-nav.next');
+            
+            thumbnails.forEach((thumb, index) => {
+                thumb.addEventListener('click', function() {
+                    thumbnails.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    mainImage.src = this.src.replace('60x60', '400x400');
+                });
+            });
+            
+            prevBtn.addEventListener('click', function() {
+                const activeThumb = document.querySelector('.thumbnail.active');
+                const activeIndex = Array.from(thumbnails).indexOf(activeThumb);
+                const prevIndex = activeIndex === 0 ? thumbnails.length - 1 : activeIndex - 1;
+                thumbnails[prevIndex].click();
+            });
+            
+            nextBtn.addEventListener('click', function() {
+                const activeThumb = document.querySelector('.thumbnail.active');
+                const activeIndex = Array.from(thumbnails).indexOf(activeThumb);
+                const nextIndex = activeIndex === thumbnails.length - 1 ? 0 : activeIndex + 1;
+                thumbnails[nextIndex].click();
+            });
+            
+            // Subscription selection
+            const subscriptionOptions = document.querySelectorAll('.subscription-option');
+            subscriptionOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    subscriptionOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    this.querySelector('input[type="radio"]').checked = true;
+                });
+            });
+            
+            // Flavor selection
+            const flavorOptions = document.querySelectorAll('.flavor-option');
+            flavorOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    flavorOptions.forEach(opt => opt.querySelector('input[type="radio"]').checked = false);
+                    this.querySelector('input[type="radio"]').checked = true;
+                });
+            });
+            
+            // Quantity controls
+            const quantityInput = document.getElementById('quantity');
+            const minusBtn = document.querySelector('.quantity-btn.minus');
+            const plusBtn = document.querySelector('.quantity-btn.plus');
+            
+            minusBtn.addEventListener('click', function() {
+                const currentValue = parseInt(quantityInput.value) || 1;
+                if (currentValue > 1) {
+                    quantityInput.value = currentValue - 1;
+                }
+            });
+            
+            plusBtn.addEventListener('click', function() {
+                const currentValue = parseInt(quantityInput.value) || 1;
+                if (currentValue < 10) {
+                    quantityInput.value = currentValue + 1;
+                }
+            });
+            
+            // Add to cart functionality
+            const addToCartBtn = document.querySelector('.add-to-cart-btn');
+            const cartNotification = document.getElementById('cart-notification');
+            const cartSummary = document.getElementById('cart-summary');
+            const cartItemsDiv = document.getElementById('cart-items');
+            const totalItemsSpan = document.getElementById('total-items');
+            
+            function showNotification(message) {
+                cartNotification.textContent = message;
+                cartNotification.classList.add('show');
+                
+                setTimeout(() => {
+                    cartNotification.classList.remove('show');
+                }, 3000);
+            }
+            
+            function updateCartSummary() {
+                if (cartItems.length > 0) {
+                    cartSummary.style.display = 'block';
+                    cartItemsDiv.innerHTML = '';
+                    
+                    cartItems.forEach((item, index) => {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.style.marginBottom = '0.5rem';
+                        itemDiv.style.padding = '0.5rem';
+                        itemDiv.style.background = 'white';
+                        itemDiv.style.borderRadius = '4px';
+                        itemDiv.style.border = '1px solid #e9ecef';
+                        
+                        itemDiv.innerHTML = `
+                            <p style="margin: 0;"><strong>${item.quantity}x</strong> ${item.flavor} ${item.subscription}</p>
+                            <p style="margin: 0; font-size: 0.9rem; color: #666;">Price: ${item.price}</p>
+                        `;
+                        
+                        cartItemsDiv.appendChild(itemDiv);
+                    });
+                    
+                    totalItemsSpan.textContent = cartCount;
+                } else {
+                    cartSummary.style.display = 'none';
+                }
+            }
+            
+            addToCartBtn.addEventListener('click', function() {
+                const selectedSubscription = document.querySelector('input[name="subscription"]:checked').value;
+                const selectedFlavor = document.querySelector('input[name="flavor"]:checked').value;
+                const quantity = parseInt(quantityInput.value);
+                const currentPrice = document.querySelector('.subscription-option.selected .current-price').textContent;
+                
+                // Create cart item
+                const cartItem = {
+                    product: 'Lorem Ipsum Drink',
+                    subscription: selectedSubscription === 'single' ? 'Single Drink' : 'Double Drink',
+                    flavor: selectedFlavor.charAt(0).toUpperCase() + selectedFlavor.slice(1),
+                    price: currentPrice,
+                    quantity: quantity
+                };
+                
+                // Add to cart
+                cartItems.push(cartItem);
+                cartCount += quantity;
+                
+                // Show notification
+                showNotification(`✅ Added ${quantity} item${quantity > 1 ? 's' : ''} to cart! (${cartCount} total)`);
+                
+                // Update button
+                const originalText = this.textContent;
+                this.textContent = 'Added! ✓';
+                this.classList.add('added');
+                
+                setTimeout(() => {
+                    this.textContent = originalText;
+                    this.classList.remove('added');
+                }, 2000);
+                
+                // Update cart summary
+                updateCartSummary();
+                
+                // Log to console
+                console.log('Cart Item Added:', cartItem);
+                console.log('Total Cart Items:', cartCount);
+                console.log('All Cart Items:', cartItems);
+            });
+        });
+    </script>
+</body>
+</html> 

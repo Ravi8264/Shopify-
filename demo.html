@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lorem Ipsum Drink - Product Page</title>
+    <link rel="stylesheet" href="assets/product-page.css">
+    <style>
+        /* Updated demo styles to match the desired layout */
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+        }
+        
+        .demo-header {
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        
+        .demo-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+        }
+        
+        .product-page {
+            background: #ffffff;
+        }
+        
+        .product-layout {
+            display: grid;
+            grid-template-columns: 40% 60%;
+            gap: 3rem;
+            align-items: start;
+        }
+        
+        /* Product Gallery Styles */
+        .product-gallery {
+            position: relative;
+        }
+        
+                 .main-image-container {
+             position: relative;
+             margin-bottom: 1rem;
+             cursor: pointer;
+         }
+        
+                 .main-image {
+             width: 100%;
+             height: 400px;
+             object-fit: cover;
+             border-radius: 8px;
+             cursor: pointer;
+             transition: all 0.3s ease;
+             user-select: none;
+             -webkit-user-select: none;
+             -moz-user-select: none;
+             -ms-user-select: none;
+         }
+         
+         .main-image:hover {
+             transform: scale(1.02);
+             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+         }
+        
+                 .gallery-nav {
+             position: absolute;
+             top: 50%;
+             transform: translateY(-50%);
+             background: rgba(255, 255, 255, 0.95);
+             border: none;
+             border-radius: 50%;
+             width: 44px;
+             height: 44px;
+             cursor: pointer;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             font-size: 20px;
+             color: #333;
+             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+             transition: all 0.3s ease;
+             z-index: 10;
+         }
+         
+         .gallery-nav:hover {
+             background: rgba(255, 255, 255, 1);
+             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+             transform: translateY(-50%) scale(1.05);
+         }
+        
+        .gallery-nav.prev {
+            left: 10px;
+        }
+        
+        .gallery-nav.next {
+            right: 10px;
+        }
+        
+        .image-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 1rem 0;
+        }
+        
+                 .indicator {
+             width: 10px;
+             height: 10px;
+             border-radius: 50%;
+             background: #ddd;
+             cursor: pointer;
+             transition: all 0.3s ease;
+             border: 2px solid transparent;
+         }
+         
+         .indicator:hover {
+             background: #bbb;
+             transform: scale(1.2);
+         }
+         
+         .indicator.active {
+             background: #333;
+             transform: scale(1.3);
+             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+         }
+        
+        .thumbnail-gallery {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+        
+                 .thumbnail {
+             width: 100%;
+             height: 60px;
+             object-fit: cover;
+             border-radius: 6px;
+             cursor: pointer;
+             border: 3px solid transparent;
+             transition: all 0.3s ease;
+             opacity: 0.7;
+         }
+         
+         .thumbnail:hover {
+             opacity: 1;
+             transform: scale(1.05);
+         }
+         
+         .thumbnail.active {
+             border-color: #333;
+             opacity: 1;
+             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+         }
+        
+        /* Product Details Styles */
+        .product-details {
+            padding: 0;
+        }
+        
+        .product-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+            color: #333;
+        }
+        
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .stars {
+            color: #ffc107;
+            font-size: 18px;
+        }
+        
+        .rating-text {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .product-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        
+        .recommended-banner {
+            background: #8B4513;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* Subscription Options */
+        .subscription-options {
+            margin-bottom: 2rem;
+        }
+        
+        .subscription-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .subscription-option.selected {
+            border-color: #333;
+            background: #f8f9fa;
+        }
+        
+        .subscription-option input[type="radio"] {
+            margin: 0;
+        }
+        
+        .subscription-info {
+            flex: 1;
+        }
+        
+        .subscription-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .subscription-price {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .current-price {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+        }
+        
+        /* Flavor Selection */
+        .flavor-selection {
+            margin-bottom: 2rem;
+        }
+        
+        .flavor-options {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .flavor-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+        
+        .flavor-option input[type="radio"] {
+            margin: 0;
+        }
+        
+        .flavor-swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+        
+        /* What's Included */
+        .whats-included {
+            margin-bottom: 2rem;
+        }
+        
+        .included-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .included-tab {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            cursor: pointer;
+            background: white;
+        }
+        
+        .included-tab.selected {
+            background: #333;
+            color: white;
+            border-color: #333;
+        }
+        
+        .included-tab img {
+            width: 30px;
+            height: 30px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        
+        .benefits-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .benefits-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+        
+        .benefits-list li::before {
+            content: "✓";
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+                 /* Add to Cart */
+         .add-to-cart-section {
+             margin-top: 2rem;
+         }
+         
+         .quantity-selector {
+             margin-bottom: 1rem;
+         }
+         
+         .quantity-selector label {
+             display: block;
+             margin-bottom: 0.5rem;
+             font-weight: 600;
+             color: #333;
+         }
+         
+         .quantity-controls {
+             display: flex;
+             align-items: center;
+             gap: 0.5rem;
+             margin-bottom: 1rem;
+         }
+         
+         .quantity-btn {
+             width: 40px;
+             height: 40px;
+             border: 2px solid #e9ecef;
+             background: white;
+             border-radius: 4px;
+             cursor: pointer;
+             font-size: 18px;
+             font-weight: bold;
+             transition: all 0.3s ease;
+             user-select: none;
+             -webkit-user-select: none;
+             -moz-user-select: none;
+             -ms-user-select: none;
+         }
+         
+         .quantity-btn:hover {
+             background: #f8f9fa;
+             border-color: #333;
+             transform: scale(1.05);
+         }
+         
+         .quantity-btn:active {
+             transform: scale(0.95);
+             background: #e9ecef;
+         }
+         
+         .quantity-btn:focus {
+             outline: 2px solid #333;
+             outline-offset: 2px;
+         }
+         
+         #quantity {
+             width: 60px;
+             height: 40px;
+             text-align: center;
+             border: 2px solid #e9ecef;
+             border-radius: 4px;
+             font-size: 16px;
+             font-weight: 600;
+         }
+         
+         #quantity:focus {
+             outline: none;
+             border-color: #333;
+         }
+         
+         .add-to-cart-btn {
+             width: 100%;
+             background: #333;
+             color: white;
+             border: none;
+             padding: 1rem 2rem;
+             border-radius: 8px;
+             font-size: 1.1rem;
+             font-weight: 600;
+             cursor: pointer;
+             transition: background 0.3s ease;
+         }
+         
+         .add-to-cart-btn:hover {
+             background: #555;
+         }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .product-layout {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .thumbnail-gallery {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-header">
+        <h1>Lorem Ipsum Drink - Product Page Demo</h1>
+    </div>
+
+    <div class="demo-container">
+        <div class="product-page">
+            <div class="product-layout">
+                <!-- Product Gallery -->
+                <div class="product-gallery">
+                    <div class="main-image-container">
+                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop&crop=center" alt="Lorem Ipsum Drink" class="main-image">
+                        <button class="gallery-nav prev">‹</button>
+                        <button class="gallery-nav next">›</button>
+                    </div>
+                    
+                                         <div class="image-indicators">
+                         <div class="indicator active"></div>
+                         <div class="indicator"></div>
+                         <div class="indicator"></div>
+                         <div class="indicator"></div>
+                         <div class="indicator"></div>
+                     </div>
+                    
+                                         <div class="thumbnail-gallery">
+                         <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=60&h=60&fit=crop&crop=center" alt="Thumbnail 1" class="thumbnail active">
+                         <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=60&h=60&fit=crop&crop=center" alt="Thumbnail 2" class="thumbnail">
+                         <img src="https://images.unsplash.com/photo-1546173159-315724a31696?w=60&h=60&fit=crop&crop=center" alt="Thumbnail 3" class="thumbnail">
+                         <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=60&h=60&fit=crop&crop=center" alt="Thumbnail 4" class="thumbnail">
+                         <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=60&h=60&fit=crop&crop=center" alt="Thumbnail 5" class="thumbnail">
+                     </div>
+                </div>
+
+                <!-- Product Details -->
+                <div class="product-details">
+                    <h1 class="product-title">Lorem Ipsum</h1>
+                    
+                    <div class="product-rating">
+                        <span class="stars">★★★★★</span>
+                        <span class="rating-text">4.6 (2,000+ reviews)</span>
+                    </div>
+                    
+                    <p class="product-description">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi eu felis vel ex aliquam interdum id nec orci. Fusce eu neque non elit efficitur dapibus quis in erat.
+                    </p>
+                    
+                    <div class="recommended-banner">Recommended</div>
+                    
+                    <!-- Subscription Options -->
+                    <div class="subscription-options">
+                        <div class="subscription-option selected">
+                            <input type="radio" name="subscription" value="single" checked>
+                            <div class="subscription-info">
+                                <div class="subscription-title">Single Drink Subscription</div>
+                                <div class="subscription-price">
+                                    <span class="current-price">$6.00</span>
+                                    <span class="original-price">$10</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="subscription-option">
+                            <input type="radio" name="subscription" value="double">
+                            <div class="subscription-info">
+                                <div class="subscription-title">Double Drink Subscription</div>
+                                <div class="subscription-price">
+                                    <span class="current-price">$12.00</span>
+                                    <span class="original-price">$20</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Flavor Selection -->
+                    <div class="flavor-selection">
+                        <h3>Choose Flavor</h3>
+                                                 <div class="flavor-options">
+                             <div class="flavor-option">
+                                 <input type="radio" name="flavor" value="chocolate" checked>
+                                 <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=40&h=40&fit=crop&crop=center" alt="Chocolate" class="flavor-swatch">
+                                 <span>Chocolate</span>
+                             </div>
+                             <div class="flavor-option">
+                                 <input type="radio" name="flavor" value="vanilla">
+                                 <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=40&h=40&fit=crop&crop=center" alt="Vanilla" class="flavor-swatch">
+                                 <span>Vanilla</span>
+                             </div>
+                             <div class="flavor-option">
+                                 <input type="radio" name="flavor" value="orange">
+                                 <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=40&h=40&fit=crop&crop=center" alt="Orange" class="flavor-swatch">
+                                 <span>Orange</span>
+                             </div>
+                         </div>
+                    </div>
+                    
+                    <!-- What's Included -->
+                    <div class="whats-included">
+                                                 <div class="included-tabs">
+                             <div class="included-tab selected">
+                                 <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=30&h=30&fit=crop&crop=center" alt="Single">
+                                 <span>Every 30 Days</span>
+                             </div>
+                             <div class="included-tab">
+                                 <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=30&h=30&fit=crop&crop=center" alt="Multiple">
+                                 <span>One Time (Free)</span>
+                             </div>
+                         </div>
+                        
+                        <ul class="benefits-list">
+                            <li>Lorem Ipsum Dolor Sit Amet, Consectetur adipiscing elit.</li>
+                            <li>Lorem Ipsum Dolor Sit Amet, Consectetur adipiscing elit.</li>
+                            <li>Lorem Ipsum Dolor Sit Amet, Consectetur adipiscing elit.</li>
+                            <li>Lorem Ipsum Dolor Sit Amet, Consectetur adipiscing elit.</li>
+                            <li>Lorem Ipsum Dolor Sit Amet, Consectetur adipiscing elit.</li>
+                        </ul>
+                    </div>
+                    
+                                         <!-- Add to Cart -->
+                     <div class="add-to-cart-section">
+                         <div class="quantity-selector">
+                             <label for="quantity">Quantity:</label>
+                             <div class="quantity-controls">
+                                 <button class="quantity-btn minus">-</button>
+                                 <input type="number" id="quantity" value="1" min="1" max="10">
+                                 <button class="quantity-btn plus">+</button>
+                             </div>
+                         </div>
+                         <button class="add-to-cart-btn">Add to Cart</button>
+                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple demo functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Subscription option selection
+            const subscriptionOptions = document.querySelectorAll('.subscription-option');
+            subscriptionOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    subscriptionOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    this.querySelector('input[type="radio"]').checked = true;
+                });
+            });
+            
+            // Flavor selection
+            const flavorOptions = document.querySelectorAll('.flavor-option');
+            flavorOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    flavorOptions.forEach(opt => opt.querySelector('input[type="radio"]').checked = false);
+                    this.querySelector('input[type="radio"]').checked = true;
+                });
+            });
+            
+            // Included tabs
+            const includedTabs = document.querySelectorAll('.included-tab');
+            includedTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    includedTabs.forEach(t => t.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+                         // Thumbnail gallery
+             const thumbnails = document.querySelectorAll('.thumbnail');
+             const mainImage = document.querySelector('.main-image');
+             const indicators = document.querySelectorAll('.indicator');
+             
+             thumbnails.forEach((thumb, index) => {
+                 thumb.addEventListener('click', function() {
+                     // Remove active class from all thumbnails and indicators
+                     thumbnails.forEach(t => t.classList.remove('active'));
+                     indicators.forEach(i => i.classList.remove('active'));
+                     
+                     // Add active class to clicked thumbnail and corresponding indicator
+                     this.classList.add('active');
+                     indicators[index].classList.add('active');
+                     
+                     // Update main image
+                     mainImage.src = this.src.replace('60x60', '400x400');
+                 });
+             });
+             
+             // Gallery navigation arrows
+             const prevBtn = document.querySelector('.gallery-nav.prev');
+             const nextBtn = document.querySelector('.gallery-nav.next');
+             
+             prevBtn.addEventListener('click', function(e) {
+                 e.preventDefault();
+                 e.stopPropagation();
+                 const activeThumb = document.querySelector('.thumbnail.active');
+                 const activeIndex = Array.from(thumbnails).indexOf(activeThumb);
+                 const prevIndex = activeIndex === 0 ? thumbnails.length - 1 : activeIndex - 1;
+                 
+                 // Simulate click on thumbnail
+                 thumbnails[prevIndex].click();
+                 
+                 // Add visual feedback
+                 this.style.transform = 'translateY(-50%) scale(0.95)';
+                 setTimeout(() => {
+                     this.style.transform = 'translateY(-50%) scale(1)';
+                 }, 150);
+             });
+             
+             nextBtn.addEventListener('click', function(e) {
+                 e.preventDefault();
+                 e.stopPropagation();
+                 const activeThumb = document.querySelector('.thumbnail.active');
+                 const activeIndex = Array.from(thumbnails).indexOf(activeThumb);
+                 const nextIndex = activeIndex === thumbnails.length - 1 ? 0 : activeIndex + 1;
+                 
+                 // Simulate click on thumbnail
+                 thumbnails[nextIndex].click();
+                 
+                 // Add visual feedback
+                 this.style.transform = 'translateY(-50%) scale(0.95)';
+                 setTimeout(() => {
+                     this.style.transform = 'translateY(-50%) scale(1)';
+                 }, 150);
+             });
+             
+             // Indicator clicks
+             indicators.forEach((indicator, index) => {
+                 indicator.addEventListener('click', function() {
+                     thumbnails[index].click();
+                 });
+             });
+             
+             // Main image click functionality - like Bootstrap carousel
+             mainImage.addEventListener('click', function(e) {
+                 console.log('Main image clicked!'); // Debug log
+                 e.preventDefault();
+                 e.stopPropagation();
+                 
+                 const activeThumb = document.querySelector('.thumbnail.active');
+                 const activeIndex = Array.from(thumbnails).indexOf(activeThumb);
+                 const nextIndex = activeIndex === thumbnails.length - 1 ? 0 : activeIndex + 1;
+                 
+                 console.log('Changing to image index:', nextIndex); // Debug log
+                 
+                 // Simulate click on next thumbnail
+                 thumbnails[nextIndex].click();
+                 
+                 // Add visual feedback like Bootstrap
+                 this.style.transform = 'scale(0.98)';
+                 setTimeout(() => {
+                     this.style.transform = 'scale(1)';
+                 }, 150);
+             });
+             
+             // Main image hover functionality
+             let hoverTimeout;
+             mainImage.addEventListener('mouseenter', function() {
+                 hoverTimeout = setTimeout(() => {
+                     const activeThumb = document.querySelector('.thumbnail.active');
+                     const activeIndex = Array.from(thumbnails).indexOf(activeThumb);
+                     const nextIndex = activeIndex === thumbnails.length - 1 ? 0 : activeIndex + 1;
+                     
+                     // Simulate click on next thumbnail
+                     thumbnails[nextIndex].click();
+                 }, 500); // 500ms delay before changing image
+             });
+             
+             mainImage.addEventListener('mouseleave', function() {
+                 clearTimeout(hoverTimeout);
+             });
+            
+                         // Add to cart functionality
+             const addToCartBtn = document.querySelector('.add-to-cart-btn');
+             let cartCount = 0;
+             
+             // Create cart notification
+             const cartNotification = document.createElement('div');
+             cartNotification.style.cssText = `
+                 position: fixed;
+                 top: 20px;
+                 right: 20px;
+                 background: #28a745;
+                 color: white;
+                 padding: 1rem 1.5rem;
+                 border-radius: 8px;
+                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                 z-index: 1000;
+                 transform: translateX(400px);
+                 transition: transform 0.3s ease;
+                 font-weight: 600;
+             `;
+             document.body.appendChild(cartNotification);
+             
+             // Quantity controls
+             const quantityInput = document.getElementById('quantity');
+             const minusBtn = document.querySelector('.quantity-btn.minus');
+             const plusBtn = document.querySelector('.quantity-btn.plus');
+             
+             console.log('Quantity elements found:', {
+                 input: quantityInput,
+                 minusBtn: minusBtn,
+                 plusBtn: plusBtn
+             });
+             
+             minusBtn.addEventListener('click', function(e) {
+                 e.preventDefault();
+                 e.stopPropagation();
+                 console.log('Minus button clicked');
+                 const currentValue = parseInt(quantityInput.value) || 1;
+                 if (currentValue > 1) {
+                     quantityInput.value = currentValue - 1;
+                     console.log('Quantity decreased to:', quantityInput.value);
+                 }
+             });
+             
+             plusBtn.addEventListener('click', function(e) {
+                 e.preventDefault();
+                 e.stopPropagation();
+                 console.log('Plus button clicked');
+                 const currentValue = parseInt(quantityInput.value) || 1;
+                 if (currentValue < 10) {
+                     quantityInput.value = currentValue + 1;
+                     console.log('Quantity increased to:', quantityInput.value);
+                 }
+             });
+             
+             // Prevent manual input of invalid values
+             quantityInput.addEventListener('input', function() {
+                 let value = parseInt(this.value) || 1;
+                 if (value < 1) this.value = 1;
+                 if (value > 10) this.value = 10;
+                 console.log('Manual quantity input:', this.value);
+             });
+             
+             addToCartBtn.addEventListener('click', function() {
+                 // Get selected options
+                 const selectedSubscription = document.querySelector('input[name="subscription"]:checked').value;
+                 const selectedFlavor = document.querySelector('input[name="flavor"]:checked').value;
+                 const quantity = parseInt(quantityInput.value);
+                 
+                 // Get prices
+                 const currentPrice = document.querySelector('.current-price').textContent;
+                 const originalPrice = document.querySelector('.original-price').textContent;
+                 
+                 // Create cart item
+                 const cartItem = {
+                     product: 'Lorem Ipsum Drink',
+                     subscription: selectedSubscription === 'single' ? 'Single Drink' : 'Double Drink',
+                     flavor: selectedFlavor.charAt(0).toUpperCase() + selectedFlavor.slice(1),
+                     price: currentPrice,
+                     originalPrice: originalPrice,
+                     quantity: quantity
+                 };
+                 
+                 // Increment cart count
+                 cartCount += quantity;
+                 
+                 // Show notification
+                 cartNotification.textContent = `✅ Added ${quantity} item${quantity > 1 ? 's' : ''} to cart! (${cartCount} total)`;
+                 cartNotification.style.transform = 'translateX(0)';
+                 
+                 // Hide notification after 3 seconds
+                 setTimeout(() => {
+                     cartNotification.style.transform = 'translateX(400px)';
+                 }, 3000);
+                 
+                 // Update button text temporarily
+                 const originalText = this.textContent;
+                 this.textContent = 'Added! ✓';
+                 this.style.background = '#28a745';
+                 
+                 setTimeout(() => {
+                     this.textContent = originalText;
+                     this.style.background = '#333';
+                 }, 2000);
+                 
+                 // Log cart item to console
+                 console.log('Cart Item Added:', cartItem);
+                 console.log('Total Cart Items:', cartCount);
+             });
+        });
+    </script>
+</body>
+</html> 

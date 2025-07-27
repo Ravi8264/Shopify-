@@ -1,0 +1,685 @@
+{% comment %}
+  Shopify Product Page - Assignment Implementation
+  Features: Dynamic pricing, variant selection, metafields, responsive design
+{% endcomment %}
+
+{% assign current_variant = product.selected_or_first_available_variant %}
+{% assign compare_at_price = current_variant.compare_at_price %}
+{% assign price = current_variant.price %}
+
+{% comment %} Calculate subscription pricing {% endcomment %}
+{% assign base_price = price %}
+{% assign subscription_price = base_price | times: 0.75 %}
+{% assign final_price = subscription_price | times: 0.8 %}
+
+<div class="product-page-container">
+  <div class="product-layout">
+    
+    <!-- Product Gallery -->
+    <div class="product-gallery">
+      <div class="main-image-container">
+        {% if product.featured_image %}
+          <img 
+            src="{{ product.featured_image | image_url: width: 600 }}" 
+            alt="{{ product.featured_image.alt | escape }}"
+            class="main-image active"
+            data-image-id="{{ product.featured_image.id }}"
+          >
+        {% endif %}
+        
+        {% for image in product.images %}
+          {% unless forloop.first %}
+            <img 
+              src="{{ image | image_url: width: 600 }}" 
+              alt="{{ image.alt | escape }}"
+              class="main-image"
+              data-image-id="{{ image.id }}"
+              style="display: none;"
+            >
+          {% endunless %}
+        {% endfor %}
+        
+        {% if product.images.size > 1 %}
+          <button class="gallery-nav prev" aria-label="Previous image">‹</button>
+          <button class="gallery-nav next" aria-label="Next image">›</button>
+        {% endif %}
+      </div>
+
+      {% if product.images.size > 1 %}
+        <div class="thumbnail-gallery">
+          {% for image in product.images %}
+            <img 
+              src="{{ image | image_url: width: 100, height: 100, crop: 'center' }}" 
+              alt="{{ image.alt | escape }}"
+              class="thumbnail {% if forloop.first %}active{% endif %}"
+              data-image-id="{{ image.id }}"
+              loading="lazy"
+            >
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Product Details -->
+    <div class="product-details">
+      <h1 class="product-title">{{ product.title }}</h1>
+      
+      {% if product.description != blank %}
+        <div class="product-description">
+          {{ product.description }}
+        </div>
+      {% endif %}
+
+      <!-- Purchase Options -->
+      <div class="purchase-options">
+        <h3>Choose Your Subscription</h3>
+        
+        <div class="subscription-options">
+          <div class="subscription-option selected" data-subscription="single">
+            <input type="radio" name="subscription" value="single" checked>
+            <div class="subscription-info">
+              <div class="subscription-title">Single Drink Subscription</div>
+              <div class="subscription-price">
+                <span class="current-price">{{ final_price | money }}</span>
+                <span class="original-price">{{ base_price | money }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="subscription-option" data-subscription="double">
+            <input type="radio" name="subscription" value="double">
+            <div class="subscription-info">
+              <div class="subscription-title">Double Drink Subscription</div>
+              <div class="subscription-price">
+                <span class="current-price">{{ final_price | times: 2 | money }}</span>
+                <span class="original-price">{{ base_price | times: 2 | money }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flavor Selection -->
+      <div class="flavor-selection">
+        <h3>Choose Flavor</h3>
+        
+        <!-- Single Drink Flavor -->
+        <div class="flavor-section" id="single-flavor-section">
+          <h4>Flavor Selection</h4>
+          <div class="flavor-options">
+            {% for option in product.options_with_values %}
+              {% if option.name == 'Flavor' %}
+                {% for value in option.values %}
+                  <div class="flavor-option">
+                    <input 
+                      type="radio" 
+                      id="flavor-{{ value | handleize }}" 
+                      name="flavor-1" 
+                      value="{{ value }}"
+                      {% if forloop.first %}checked{% endif %}
+                    >
+                    <label for="flavor-{{ value | handleize }}">
+                      <div class="flavor-swatch">
+                        {% assign flavor_image = product.metafields.custom.flavor_images[value] %}
+                        {% if flavor_image %}
+                          <img src="{{ flavor_image | image_url: width: 40, height: 40, crop: 'center' }}" alt="{{ value }}">
+                        {% else %}
+                          <div class="flavor-placeholder">{{ value | slice: 0, 1 }}</div>
+                        {% endif %}
+                      </div>
+                      <span class="flavor-name">{{ value }}</span>
+                    </label>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Double Drink Flavor -->
+        <div class="flavor-section" id="double-flavor-section" style="display: none;">
+          <h4>First Flavor</h4>
+          <div class="flavor-options" id="flavor-1-options">
+            {% for option in product.options_with_values %}
+              {% if option.name == 'Flavor' %}
+                {% for value in option.values %}
+                  <div class="flavor-option">
+                    <input 
+                      type="radio" 
+                      id="flavor-1-{{ value | handleize }}" 
+                      name="flavor-1-double" 
+                      value="{{ value }}"
+                      {% if forloop.first %}checked{% endif %}
+                    >
+                    <label for="flavor-1-{{ value | handleize }}">
+                      <div class="flavor-swatch">
+                        {% assign flavor_image = product.metafields.custom.flavor_images[value] %}
+                        {% if flavor_image %}
+                          <img src="{{ flavor_image | image_url: width: 40, height: 40, crop: 'center' }}" alt="{{ value }}">
+                        {% else %}
+                          <div class="flavor-placeholder">{{ value | slice: 0, 1 }}</div>
+                        {% endif %}
+                      </div>
+                      <span class="flavor-name">{{ value }}</span>
+                    </label>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+          </div>
+          
+          <h4>Second Flavor</h4>
+          <div class="flavor-options" id="flavor-2-options">
+            {% for option in product.options_with_values %}
+              {% if option.name == 'Flavor' %}
+                {% for value in option.values %}
+                  <div class="flavor-option">
+                    <input 
+                      type="radio" 
+                      id="flavor-2-{{ value | handleize }}" 
+                      name="flavor-2-double" 
+                      value="{{ value }}"
+                      {% if forloop.first %}checked{% endif %}
+                    >
+                    <label for="flavor-2-{{ value | handleize }}">
+                      <div class="flavor-swatch">
+                        {% assign flavor_image = product.metafields.custom.flavor_images[value] %}
+                        {% if flavor_image %}
+                          <img src="{{ flavor_image | image_url: width: 40, height: 40, crop: 'center' }}" alt="{{ value }}">
+                        {% else %}
+                          <div class="flavor-placeholder">{{ value | slice: 0, 1 }}</div>
+                        {% endif %}
+                      </div>
+                      <span class="flavor-name">{{ value }}</span>
+                    </label>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- What's Included -->
+      {% render 'whats-included' %}
+
+      <!-- Add to Cart -->
+      <div class="add-to-cart-section">
+        <form action="/cart/add" method="post" enctype="multipart/form-data" id="product-form">
+          <input type="hidden" name="id" value="{{ current_variant.id }}" id="variant-id">
+          
+          <div class="quantity-selector">
+            <label for="quantity">Quantity:</label>
+            <div class="quantity-controls">
+              <button type="button" class="quantity-btn minus">-</button>
+              <input type="number" id="quantity" name="quantity" value="1" min="1" max="10">
+              <button type="button" class="quantity-btn plus">+</button>
+            </div>
+          </div>
+          
+          <button type="submit" class="add-to-cart-btn" id="add-to-cart-btn">
+            Add to Cart
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .product-page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 20px;
+  }
+  
+  .product-layout {
+    display: grid;
+    grid-template-columns: 40% 60%;
+    gap: 3rem;
+    align-items: start;
+  }
+  
+  /* Product Gallery */
+  .product-gallery {
+    position: relative;
+  }
+  
+  .main-image-container {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  
+  .main-image {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .gallery-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+  }
+  
+  .gallery-nav.prev { left: 10px; }
+  .gallery-nav.next { right: 10px; }
+  
+  .thumbnail-gallery {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  
+  .thumbnail {
+    width: 100%;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 3px solid transparent;
+    opacity: 0.7;
+  }
+  
+  .thumbnail.active {
+    border-color: #333;
+    opacity: 1;
+  }
+  
+  /* Product Details */
+  .product-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    color: #333;
+  }
+  
+  .product-description {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+  
+  /* Subscription Options */
+  .subscription-options {
+    margin-bottom: 2rem;
+  }
+  
+  .subscription-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .subscription-option.selected {
+    border-color: #333;
+    background: #f8f9fa;
+  }
+  
+  .subscription-info {
+    flex: 1;
+  }
+  
+  .subscription-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  
+  .subscription-price {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .current-price {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .original-price {
+    text-decoration: line-through;
+    color: #999;
+  }
+  
+  /* Flavor Selection */
+  .flavor-selection {
+    margin-bottom: 2rem;
+  }
+  
+  .flavor-options {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .flavor-option {
+    display: flex;
+    align-items: center;
+  }
+  
+  .flavor-option input[type="radio"] {
+    display: none;
+  }
+  
+  .flavor-option label {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .flavor-swatch {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+  }
+  
+  .flavor-swatch img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .flavor-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #666;
+  }
+  
+  .flavor-option input[type="radio"]:checked + label .flavor-swatch {
+    border-color: #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .flavor-name {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  /* Add to Cart */
+  .add-to-cart-section {
+    margin-top: 2rem;
+  }
+  
+  .quantity-selector {
+    margin-bottom: 1rem;
+  }
+  
+  .quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .quantity-btn {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #e9ecef;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  #quantity {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+    border: 2px solid #e9ecef;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
+  .add-to-cart-btn {
+    width: 100%;
+    background: #333;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .add-to-cart-btn:hover {
+    background: #555;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .product-layout {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    
+    .thumbnail-gallery {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .flavor-options {
+      justify-content: center;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Product data for metafields
+    window.productData = {
+      metafields: {
+        single_included: {{ product.metafields.custom.single_included | json }},
+        double_included: {{ product.metafields.custom.double_included | json }},
+        flavor_images: {{ product.metafields.custom.flavor_images | json }}
+      }
+    };
+    
+    // Gallery functionality
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    const mainImages = document.querySelectorAll('.main-image');
+    const prevBtn = document.querySelector('.gallery-nav.prev');
+    const nextBtn = document.querySelector('.gallery-nav.next');
+    
+    thumbnails.forEach((thumb, index) => {
+      thumb.addEventListener('click', function() {
+        thumbnails.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        const imageId = this.dataset.imageId;
+        mainImages.forEach(img => {
+          img.style.display = 'none';
+          img.classList.remove('active');
+        });
+        
+        const selectedImage = document.querySelector(`.main-image[data-image-id="${imageId}"]`);
+        if (selectedImage) {
+          selectedImage.style.display = 'block';
+          selectedImage.classList.add('active');
+        }
+      });
+    });
+    
+    if (prevBtn && nextBtn) {
+      prevBtn.addEventListener('click', function() {
+        const activeThumb = document.querySelector('.thumbnail.active');
+        const activeIndex = Array.from(thumbnails).indexOf(activeThumb);
+        const prevIndex = activeIndex === 0 ? thumbnails.length - 1 : activeIndex - 1;
+        thumbnails[prevIndex].click();
+      });
+      
+      nextBtn.addEventListener('click', function() {
+        const activeThumb = document.querySelector('.thumbnail.active');
+        const activeIndex = Array.from(thumbnails).indexOf(activeThumb);
+        const nextIndex = activeIndex === thumbnails.length - 1 ? 0 : activeIndex + 1;
+        thumbnails[nextIndex].click();
+      });
+    }
+    
+    // Subscription selection
+    const subscriptionOptions = document.querySelectorAll('.subscription-option');
+    const singleSection = document.getElementById('single-flavor-section');
+    const doubleSection = document.getElementById('double-flavor-section');
+    
+    subscriptionOptions.forEach(option => {
+      option.addEventListener('click', function() {
+        subscriptionOptions.forEach(opt => opt.classList.remove('selected'));
+        this.classList.add('selected');
+        this.querySelector('input[type="radio"]').checked = true;
+        
+        const subscriptionType = this.dataset.subscription;
+        if (subscriptionType === 'single') {
+          singleSection.style.display = 'block';
+          doubleSection.style.display = 'none';
+        } else {
+          singleSection.style.display = 'none';
+          doubleSection.style.display = 'block';
+        }
+        
+        // Update pricing
+        updatePricing();
+      });
+    });
+    
+    // Quantity controls
+    const quantityInput = document.getElementById('quantity');
+    const minusBtn = document.querySelector('.quantity-btn.minus');
+    const plusBtn = document.querySelector('.quantity-btn.plus');
+    
+    minusBtn.addEventListener('click', function() {
+      const currentValue = parseInt(quantityInput.value) || 1;
+      if (currentValue > 1) {
+        quantityInput.value = currentValue - 1;
+      }
+    });
+    
+    plusBtn.addEventListener('click', function() {
+      const currentValue = parseInt(quantityInput.value) || 1;
+      if (currentValue < 10) {
+        quantityInput.value = currentValue + 1;
+      }
+    });
+    
+    // Update pricing function
+    function updatePricing() {
+      const selectedSubscription = document.querySelector('.subscription-option.selected');
+      const basePrice = {{ base_price }};
+      const subscriptionPrice = basePrice * 0.75;
+      const finalPrice = subscriptionPrice * 0.8;
+      
+      if (selectedSubscription.dataset.subscription === 'single') {
+        selectedSubscription.querySelector('.current-price').textContent = formatMoney(finalPrice);
+        selectedSubscription.querySelector('.original-price').textContent = formatMoney(basePrice);
+      } else {
+        selectedSubscription.querySelector('.current-price').textContent = formatMoney(finalPrice * 2);
+        selectedSubscription.querySelector('.original-price').textContent = formatMoney(basePrice * 2);
+      }
+    }
+    
+    // Format money function
+    function formatMoney(cents) {
+      return '$' + (cents / 100).toFixed(2);
+    }
+    
+    // Add to cart functionality
+    const productForm = document.getElementById('product-form');
+    const variantIdInput = document.getElementById('variant-id');
+    
+    productForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const selectedSubscription = document.querySelector('.subscription-option.selected');
+      const subscriptionType = selectedSubscription.dataset.subscription;
+      const quantity = parseInt(quantityInput.value);
+      
+      // Get selected flavors
+      let flavors = [];
+      if (subscriptionType === 'single') {
+        const selectedFlavor = document.querySelector('input[name="flavor-1"]:checked');
+        if (selectedFlavor) {
+          flavors.push(selectedFlavor.value);
+        }
+      } else {
+        const flavor1 = document.querySelector('input[name="flavor-1-double"]:checked');
+        const flavor2 = document.querySelector('input[name="flavor-2-double"]:checked');
+        if (flavor1) flavors.push(flavor1.value);
+        if (flavor2) flavors.push(flavor2.value);
+      }
+      
+      // Add to cart logic
+      const formData = new FormData(productForm);
+      formData.append('quantity', quantity);
+      
+      fetch('/cart/add.js', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Added to cart:', data);
+        showNotification(`✅ Added ${quantity} item${quantity > 1 ? 's' : ''} to cart!`);
+      })
+      .catch(error => {
+        console.error('Error adding to cart:', error);
+        showNotification('❌ Error adding to cart');
+      });
+    });
+    
+    // Notification function
+    function showNotification(message) {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        font-weight: 600;
+      `;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+  });
+</script> 
